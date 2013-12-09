@@ -58,8 +58,7 @@ class LittleElephantAndIntervalsDiv1
 };
 
 // BEGIN CUT HERE
-int main()
-{
+int main() {
 	LittleElephantAndIntervalsDiv1 ___test;
 	___test.run_test(-1);
 	return 0;
