@@ -37,6 +37,7 @@ class LittleElephantAndString
             if(multiset <char> (A.begin(), A.end()) != multiset <char> (B.begin(), B.end())) {
                     return -1;
             }
+
             int n = A.size();
             int j = n - 1;
             for(int i = n - 1; i >= 0; i--) {
@@ -48,6 +49,7 @@ class LittleElephantAndString
                 }
                 j--;
             }
+
             return 0;
         }  
         
