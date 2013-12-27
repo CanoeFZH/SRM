@@ -74,6 +74,7 @@ class ConvexPolygonGame {
                     }
                 }
             }
+
             for (int i = 2; i < (int) pX.size(); i++) {
                 if (!collinear(pX[0], pY[0], pX[1], pY[1], pX[i], pY[i])) {
                     return "Masha";
