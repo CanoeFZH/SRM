@@ -16,7 +16,6 @@
 
 using namespace std;
 
-const double EPS = 1e-8;
 const double INF = 1e30;
 const int N = 22;
 
@@ -79,7 +78,7 @@ class Egalitarianism2
             for (int i = 0; i < n * n; i++) {
                 for (int j = i + 1; j < n * n; j++) {
                     double m = (w[i / n][i % n] + w[j / n][j % n]) / 2;
-                    ret = min(ret, KruskalMST(m + EPS));
+                    ret = min(ret, KruskalMST(m));
                 }
             }
             return ret;
