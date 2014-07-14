@@ -1,6 +1,3 @@
-// BEGIN CUT HERE
-
-// END CUT HERE
 #include <sstream>
 #include <cstdio>
 #include <cstdlib>
@@ -16,33 +13,88 @@
 
 using namespace std;
 
+class BitTree 
+{
+    private:
+        vector <int> C;
+    public:
+        void init(int n) {
+            C.assign(n, 0);
+        }
+
+        inline int lowbit(int x) {
+            return x & (-x);
+        }
+
+        void add(int x, int value) {
+            while(x < C.size()) {
+                C[x] += value;
+                x += lowbit(x);
+            }
+        }
+
+        int sum(int x) { // (0, x]
+            int ret = 0;
+            while(x > 0) {
+                ret += C[x];
+                x -= lowbit(x);
+            }
+            return ret;
+        }
+
+        int sum (int left, int right) { // (left, right]
+            return sum(right) - sum(left);
+        }
+};
+
 class GraphInversions
 {
+    static const int N = 1024;
+    static const int INF = 1 << 28;
     public:
-        int getMinimumInversions(vector <int> A, vector <int> B, vector <int> V, int K) {
+    BitTree bitTree;
+    vector <int> E[N], V;
+    vector <bool> vis;
+    int dfs(int pre, int u, int pathLength, int inversion) {
+        if (pathLength == 1) {
+            return inversion;
         }
-        
-// BEGIN CUT HERE
-	public:
-	void run_test(int Case) { if ((Case == -1) || (Case == 0)) test_case_0(); if ((Case == -1) || (Case == 1)) test_case_1(); if ((Case == -1) || (Case == 2)) test_case_2(); if ((Case == -1) || (Case == 3)) test_case_3(); if ((Case == -1) || (Case == 4)) test_case_4(); }
-	private:
-	template <typename T> string print_array(const vector<T> &V) { ostringstream os; os << "{ "; for (typename vector<T>::const_iterator iter = V.begin(); iter != V.end(); ++iter) os << '\"' << *iter << "\","; os << " }"; return os.str(); }
-	void verify_case(int Case, const int &Expected, const int &Received) { cerr << "Test Case #" << Case << "..."; if (Expected == Received) cerr << "PASSED" << endl; else { cerr << "FAILED" << endl; cerr << "\tExpected: \"" << Expected << '\"' << endl; cerr << "\tReceived: \"" << Received << '\"' << endl; } }
-	void test_case_0() { int Arr0[] = {0,1,2}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); int Arr1[] = {1,2,0}; vector <int> Arg1(Arr1, Arr1 + (sizeof(Arr1) / sizeof(Arr1[0]))); int Arr2[] = {40,50,60}; vector <int> Arg2(Arr2, Arr2 + (sizeof(Arr2) / sizeof(Arr2[0]))); int Arg3 = 3; int Arg4 = 0; verify_case(0, Arg4, getMinimumInversions(Arg0, Arg1, Arg2, Arg3)); }
-	void test_case_1() { int Arr0[] = {0,1,2,3}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); int Arr1[] = {1,2,3,0}; vector <int> Arg1(Arr1, Arr1 + (sizeof(Arr1) / sizeof(Arr1[0]))); int Arr2[] = {60,40,50,30}; vector <int> Arg2(Arr2, Arr2 + (sizeof(Arr2) / sizeof(Arr2[0]))); int Arg3 = 3; int Arg4 = 1; verify_case(1, Arg4, getMinimumInversions(Arg0, Arg1, Arg2, Arg3)); }
-	void test_case_2() { int Arr0[] = {0,1,2,3,0}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); int Arr1[] = {1,2,3,0,4}; vector <int> Arg1(Arr1, Arr1 + (sizeof(Arr1) / sizeof(Arr1[0]))); int Arr2[] = {10,10,10,5,5}; vector <int> Arg2(Arr2, Arr2 + (sizeof(Arr2) / sizeof(Arr2[0]))); int Arg3 = 5; int Arg4 = 1; verify_case(2, Arg4, getMinimumInversions(Arg0, Arg1, Arg2, Arg3)); }
-	void test_case_3() { int Arr0[] = {0,1,2,3,0,2}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); int Arr1[] = {1,2,3,0,4,5}; vector <int> Arg1(Arr1, Arr1 + (sizeof(Arr1) / sizeof(Arr1[0]))); int Arr2[] = {10,2,5,3,7,1}; vector <int> Arg2(Arr2, Arr2 + (sizeof(Arr2) / sizeof(Arr2[0]))); int Arg3 = 6; int Arg4 = -1; verify_case(3, Arg4, getMinimumInversions(Arg0, Arg1, Arg2, Arg3)); }
-	void test_case_4() { int Arr0[] = {5,7,7,5,5,7,6,4}; vector <int> Arg0(Arr0, Arr0 + (sizeof(Arr0) / sizeof(Arr0[0]))); int Arr1[] = {2,0,2,0,1,4,7,3}; vector <int> Arg1(Arr1, Arr1 + (sizeof(Arr1) / sizeof(Arr1[0]))); int Arr2[] = {15,10,5,30,22,10,5,2}; vector <int> Arg2(Arr2, Arr2 + (sizeof(Arr2) / sizeof(Arr2[0]))); int Arg3 = 6; int Arg4 = 3; verify_case(4, Arg4, getMinimumInversions(Arg0, Arg1, Arg2, Arg3)); }
+        int ret = INF;
+        vis[u] = true;
+        bitTree.add(V[u], 1);
+        for (int & v: E[u]) {
+            if (pre != v && !vis[v]) {
+                ret = min(ret, dfs(u, v, pathLength - 1, inversion + bitTree.sum(V[v] - 1)));
+            }
+        }
+        bitTree.add(V[u], -1);
+        vis[u] = false;
+        return ret;
+    }
+    int getMinimumInversions(vector <int> A, vector <int> B, vector <int> V, int K) {
+        int n = A.size();
+        this->V = V;
+        for (int i = 0; i < n; i++) {
+            E[i].clear();
+        }
+        for (int i = 0; i < n; i++) {
+            E[A[i]].push_back(B[i]);
+            E[B[i]].push_back(A[i]);
+        }
+        int ret = INF;
+        for (int i = 0; i < n; i++) {
+            bitTree.init(N);
+            vis.assign(N, false);
+            ret = min(ret, dfs(-1, i, K, 0));
+        }
+        return ret == INF ? -1 : ret;
+    }
 
-// END CUT HERE
 
 };
 
-// BEGIN CUT HERE
 
-int main(){
-    GraphInversions ___test;
-    ___test.run_test(-1);
-    return 0;
-}
-// END CUT HERE
+
+// Powered by FileEdit
+// Powered by TZTester 1.01 [25-Feb-2003]
+// Powered by CodeProcessor
